@@ -2,6 +2,8 @@ import { deleteMessage, markMessageRead } from "@/actions/messages";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { listMessages } from "@/db/queries";
+import { requireAdmin } from "@/lib/auth";
+import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
 import { formatDateTime } from "@/lib/utils";
@@ -10,6 +12,8 @@ export default async function MessagesPage({ params }: { params: Promise<{ local
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : "ar";
   const dict = getDict(locale);
+  const user = await requireAdmin(locale);
+  if (user.role !== "admin") notFound();
   const rows = await listMessages();
   return (
     <>
@@ -22,7 +26,10 @@ export default async function MessagesPage({ params }: { params: Promise<{ local
             <article key={m.id} className={`card p-5 ${m.isRead ? "" : "border-brand-300 bg-brand-50/40"}`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-slate-900">{m.subject || "—"}</p>
+                  <p className="font-semibold text-slate-900">
+                    <span className={`badge me-2 ${m.category === "support" ? "bg-accent-400/30 text-brand-900" : "bg-slate-100 text-slate-600"}`}>{dict.admin.categories[m.category]}</span>
+                    {m.subject || "—"}
+                  </p>
                   <p className="text-xs text-slate-500">
                     {m.name} · <a href={`mailto:${m.email}`} className="text-brand-700 hover:underline" dir="ltr">{m.email}</a> · {formatDateTime(m.createdAt, locale)}
                   </p>

@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { deleteConference, setConferenceStatus } from "@/actions/conferences";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { ConferenceForm } from "@/components/forms/ConferenceForm";
-import { getConferenceById } from "@/db/queries";
+import { getConferenceById, listOrganizers } from "@/db/queries";
+import { requireAdmin } from "@/lib/auth";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
 
@@ -10,8 +11,10 @@ export default async function EditConferencePage({ params }: { params: Promise<{
   const { locale: raw, id } = await params;
   const locale = isLocale(raw) ? raw : "ar";
   const dict = getDict(locale);
+  const user = await requireAdmin(locale);
   const conference = await getConferenceById(Number(id));
   if (!conference) notFound();
+  const owners = user.role === "admin" ? await listOrganizers() : undefined;
   return (
     <>
       <div className="mb-6 flex flex-wrap gap-2">
@@ -41,7 +44,7 @@ export default async function EditConferencePage({ params }: { params: Promise<{
           <ConfirmButton message={dict.admin.confirmDelete}>{dict.common.delete}</ConfirmButton>
         </form>
       </div>
-      <ConferenceForm locale={locale} dict={dict} conference={conference} />
+      <ConferenceForm locale={locale} dict={dict} conference={conference} owners={owners} />
     </>
   );
 }

@@ -48,3 +48,6 @@ next-env.d.ts
 
 # restored legacy site is downloaded on demand (see scripts/restore_from_wayback.py)
 /legacy/*/manifest.json
+
+# deployment packages (built by scripts/package.sh)
+/dist

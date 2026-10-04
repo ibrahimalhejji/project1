@@ -1,6 +1,7 @@
 import { and, asc, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { db } from "./index";
-import { abstracts, conferences, messages, registrations, sessionSpeakers, sessions, speakers, sponsors, tracks, type Session, type Speaker } from "./schema";
+import { abstracts, conferences, messages, registrations, sessionSpeakers, sessions, speakers, sponsors, tracks, users, type Session, type Speaker } from "./schema";
+import type { CurrentUser } from "@/lib/auth";
 
 export type SessionWithSpeakers = Session & { speakers: Speaker[] };
 
@@ -10,6 +11,35 @@ export async function listPublishedConferences() {
 
 export async function listAllConferences() {
   return db.select().from(conferences).orderBy(desc(conferences.startDate));
+}
+
+/** Administrators see every conference; organisers only their own. */
+export async function listManagedConferences(user: CurrentUser) {
+  const scope = user.role === "admin" ? undefined : eq(conferences.ownerId, user.id);
+  return db.select().from(conferences).where(scope).orderBy(desc(conferences.startDate));
+}
+
+export async function listUsers() {
+  return db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      organization: users.organization,
+      createdAt: users.createdAt,
+      conferences: sql<number>`(select count(*) from conferences where owner_id = ${users.id})`,
+    })
+    .from(users)
+    .orderBy(desc(users.createdAt));
+}
+
+export async function listOrganizers() {
+  return db
+    .select({ id: users.id, name: users.name, email: users.email, role: users.role })
+    .from(users)
+    .where(inArray(users.role, ["admin", "organizer"]))
+    .orderBy(asc(users.name));
 }
 
 export async function getConferenceBySlug(slug: string, includeDrafts = false) {
@@ -126,25 +156,37 @@ export async function publicStats() {
   return { conferences: conf?.value ?? 0, speakers: spk?.value ?? 0, registrations: reg?.value ?? 0 };
 }
 
-export async function dashboardStats() {
-  const [total] = await db.select({ value: count() }).from(conferences);
-  const [published] = await db.select({ value: count() }).from(conferences).where(eq(conferences.status, "published"));
-  const [regs] = await db.select({ value: count() }).from(registrations).where(ne(registrations.status, "cancelled"));
+export async function dashboardStats(user?: CurrentUser) {
+  const scoped = !!user && user.role !== "admin";
+  const scope = scoped ? eq(conferences.ownerId, user.id) : undefined;
+  const [total] = await db.select({ value: count() }).from(conferences).where(scope);
+  const [published] = await db
+    .select({ value: count() })
+    .from(conferences)
+    .where(and(scope, eq(conferences.status, "published")));
+  const [regs] = await db
+    .select({ value: count() })
+    .from(registrations)
+    .innerJoin(conferences, eq(conferences.id, registrations.conferenceId))
+    .where(and(scope, ne(registrations.status, "cancelled")));
   const [pendingAbs] = await db
     .select({ value: count() })
     .from(abstracts)
-    .where(inArray(abstracts.status, ["submitted", "under_review"]));
-  const [unread] = await db.select({ value: count() }).from(messages).where(eq(messages.isRead, false));
+    .innerJoin(conferences, eq(conferences.id, abstracts.conferenceId))
+    .where(and(scope, inArray(abstracts.status, ["submitted", "under_review"])));
+  const [unread] = scoped ? [{ value: 0 }] : await db.select({ value: count() }).from(messages).where(eq(messages.isRead, false));
   const recentRegistrations = await db
     .select({ registration: registrations, conference: conferences })
     .from(registrations)
     .innerJoin(conferences, eq(conferences.id, registrations.conferenceId))
+    .where(scope)
     .orderBy(desc(registrations.createdAt))
     .limit(8);
   const recentAbstracts = await db
     .select({ abstract: abstracts, conference: conferences })
     .from(abstracts)
     .innerJoin(conferences, eq(conferences.id, abstracts.conferenceId))
+    .where(scope)
     .orderBy(desc(abstracts.createdAt))
     .limit(5);
   return {

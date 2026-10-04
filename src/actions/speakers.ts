@@ -6,10 +6,10 @@ import { db } from "@/db";
 import { speakers } from "@/db/schema";
 import { bool, int, str, type ActionState } from "@/lib/form";
 import { getDict } from "@/i18n/dictionaries";
-import { localeFrom, requireAdminAction, revalidateAll } from "./_guard";
+import { assertConference, assertOwned, localeFrom, requireManager, revalidateAll } from "./_guard";
 
 export async function saveSpeaker(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdminAction();
+  const user = await requireManager();
   const locale = localeFrom(form);
   const dict = getDict(locale);
   const id = int(form, "id");
@@ -18,6 +18,8 @@ export async function saveSpeaker(_prev: ActionState, form: FormData): Promise<A
   const nameAr = str(form, "nameAr", 200);
   const errors: Record<string, string> = {};
   if (!conferenceId) return { ok: false, message: dict.common.error };
+  await assertConference(user, conferenceId);
+  if (id && (await assertOwned(user, "speakers", id)) !== conferenceId) return { ok: false, message: dict.common.error };
   if (!nameEn) errors.nameEn = dict.common.required;
   if (!nameAr) errors.nameAr = dict.common.required;
   if (Object.keys(errors).length) return { ok: false, errors };
@@ -46,8 +48,11 @@ export async function saveSpeaker(_prev: ActionState, form: FormData): Promise<A
 }
 
 export async function deleteSpeaker(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
-  if (id) await db.delete(speakers).where(eq(speakers.id, id));
+  if (id) {
+    await assertOwned(user, "speakers", id);
+    await db.delete(speakers).where(eq(speakers.id, id));
+  }
   revalidateAll();
 }

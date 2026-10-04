@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/forms/LoginForm";
 import { LogoMark } from "@/components/Logo";
@@ -33,6 +34,11 @@ export default async function LoginPage({ params, searchParams }: Props) {
         <div className="mt-6">
           <LoginForm locale={locale} dict={dict} next={next && next.startsWith(`/${locale}/`) ? next : `/${locale}/admin`} />
         </div>
+        <p className="mt-5 text-center text-sm text-slate-600">
+          <Link href={`/${locale}/signup`} className="font-semibold text-brand-700 hover:underline">
+            {dict.nav.signup} →
+          </Link>
+        </p>
       </div>
     </div>
   );

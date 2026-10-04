@@ -8,7 +8,7 @@ import { int, oneOf, str, type ActionState } from "@/lib/form";
 import { generateCode } from "@/lib/codes";
 import { isValidEmail } from "@/lib/utils";
 import { getDict } from "@/i18n/dictionaries";
-import { localeFrom, requireAdminAction, revalidateAll } from "./_guard";
+import { assertOwned, localeFrom, requireManager, revalidateAll } from "./_guard";
 
 export async function registerAttendee(_prev: ActionState, form: FormData): Promise<ActionState> {
   const locale = localeFrom(form);
@@ -52,16 +52,22 @@ export async function registerAttendee(_prev: ActionState, form: FormData): Prom
 }
 
 export async function updateRegistrationStatus(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
   const status = oneOf(form, "status", REGISTRATION_STATUSES, "pending");
-  if (id) await db.update(registrations).set({ status }).where(eq(registrations.id, id));
+  if (id) {
+    await assertOwned(user, "registrations", id);
+    await db.update(registrations).set({ status }).where(eq(registrations.id, id));
+  }
   revalidateAll();
 }
 
 export async function deleteRegistration(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
-  if (id) await db.delete(registrations).where(eq(registrations.id, id));
+  if (id) {
+    await assertOwned(user, "registrations", id);
+    await db.delete(registrations).where(eq(registrations.id, id));
+  }
   revalidateAll();
 }

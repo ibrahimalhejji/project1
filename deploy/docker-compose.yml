@@ -1,0 +1,17 @@
+services:
+  cmchub:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: cmchub-net
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      DATABASE_URL: file:./data/cmchub.db
+    ports:
+      - "3000:3000"
+    volumes:
+      - cmchub-data:/app/data
+
+volumes:
+  cmchub-data:

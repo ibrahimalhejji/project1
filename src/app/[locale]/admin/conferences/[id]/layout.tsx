@@ -5,14 +5,17 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { conferenceCounts, getConferenceById } from "@/db/queries";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
+import { requireAdmin } from "@/lib/auth";
+import { canManageConference } from "@/actions/_guard";
 import { formatDateRange, localized } from "@/lib/utils";
 
 export default async function ConferenceAdminLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string; id: string }> }) {
   const { locale: raw, id } = await params;
   const locale = isLocale(raw) ? raw : "ar";
   const dict = getDict(locale);
+  const user = await requireAdmin(locale);
   const conference = await getConferenceById(Number(id));
-  if (!conference) notFound();
+  if (!conference || !(await canManageConference(user, conference.id))) notFound();
   const counts = await conferenceCounts(conference.id);
   return (
     <>

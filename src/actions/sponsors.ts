@@ -6,16 +6,18 @@ import { db } from "@/db";
 import { sponsors, SPONSOR_TIERS } from "@/db/schema";
 import { int, oneOf, str, type ActionState } from "@/lib/form";
 import { getDict } from "@/i18n/dictionaries";
-import { localeFrom, requireAdminAction, revalidateAll } from "./_guard";
+import { assertConference, assertOwned, localeFrom, requireManager, revalidateAll } from "./_guard";
 
 export async function saveSponsor(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdminAction();
+  const user = await requireManager();
   const locale = localeFrom(form);
   const dict = getDict(locale);
   const id = int(form, "id");
   const conferenceId = int(form, "conferenceId");
   const name = str(form, "name", 200);
   if (!conferenceId) return { ok: false, message: dict.common.error };
+  await assertConference(user, conferenceId);
+  if (id && (await assertOwned(user, "sponsors", id)) !== conferenceId) return { ok: false, message: dict.common.error };
   if (!name) return { ok: false, errors: { name: dict.common.required } };
   const values = {
     conferenceId,
@@ -32,8 +34,11 @@ export async function saveSponsor(_prev: ActionState, form: FormData): Promise<A
 }
 
 export async function deleteSponsor(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
-  if (id) await db.delete(sponsors).where(eq(sponsors.id, id));
+  if (id) {
+    await assertOwned(user, "sponsors", id);
+    await db.delete(sponsors).where(eq(sponsors.id, id));
+  }
   revalidateAll();
 }

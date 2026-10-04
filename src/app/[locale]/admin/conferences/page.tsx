@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { listAllConferences } from "@/db/queries";
+import { listManagedConferences } from "@/db/queries";
+import { requireAdmin } from "@/lib/auth";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
 import { formatDateRange, localized } from "@/lib/utils";
@@ -10,7 +11,8 @@ export default async function AdminConferencesPage({ params }: { params: Promise
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : "ar";
   const dict = getDict(locale);
-  const conferences = await listAllConferences();
+  const user = await requireAdmin(locale);
+  const conferences = await listManagedConferences(user);
   return (
     <>
       <PageHeader

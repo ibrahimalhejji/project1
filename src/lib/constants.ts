@@ -6,3 +6,4 @@ export const TICKET_TYPES = ["standard", "student", "speaker", "vip"] as const;
 export const REGISTRATION_STATUSES = ["pending", "confirmed", "cancelled", "attended"] as const;
 export const ABSTRACT_STATUSES = ["submitted", "under_review", "accepted", "rejected"] as const;
 export const SPONSOR_TIERS = ["platinum", "gold", "silver", "bronze", "partner", "media"] as const;
+export const MESSAGE_CATEGORIES = ["contact", "support"] as const;

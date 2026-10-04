@@ -7,13 +7,14 @@ import { conferences, CONFERENCE_STATUSES } from "@/db/schema";
 import { bool, int, num, oneOf, str, type ActionState } from "@/lib/form";
 import { slugify } from "@/lib/utils";
 import { getDict } from "@/i18n/dictionaries";
-import { localeFrom, requireAdminAction, revalidateAll } from "./_guard";
+import { assertConference, localeFrom, requireManager, revalidateAll } from "./_guard";
 
 export async function saveConference(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdminAction();
+  const user = await requireManager();
   const locale = localeFrom(form);
   const dict = getDict(locale);
   const id = int(form, "id");
+  if (id) await assertConference(user, id);
   const titleEn = str(form, "titleEn", 200);
   const titleAr = str(form, "titleAr", 200);
   const startDate = str(form, "startDate", 10);
@@ -55,11 +56,18 @@ export async function saveConference(_prev: ActionState, form: FormData): Promis
     updatedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
   };
 
+  // Ownership: organisers always own what they create; administrators may assign an owner.
+  const requestedOwner = int(form, "ownerId");
+  const ownerId = user.role === "admin" ? (form.has("ownerId") ? requestedOwner || null : undefined) : id ? undefined : user.id;
+
   let conferenceId = id;
   if (id) {
-    await db.update(conferences).set(values).where(eq(conferences.id, id));
+    await db.update(conferences).set(ownerId === undefined ? values : { ...values, ownerId }).where(eq(conferences.id, id));
   } else {
-    const inserted = await db.insert(conferences).values(values).returning({ id: conferences.id });
+    const inserted = await db
+      .insert(conferences)
+      .values({ ...values, ownerId: ownerId === undefined ? user.id : ownerId })
+      .returning({ id: conferences.id });
     conferenceId = inserted[0].id;
   }
   revalidateAll();
@@ -67,17 +75,19 @@ export async function saveConference(_prev: ActionState, form: FormData): Promis
 }
 
 export async function setConferenceStatus(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
+  if (id) await assertConference(user, id);
   const status = oneOf(form, "status", CONFERENCE_STATUSES, "draft");
   if (id) await db.update(conferences).set({ status }).where(eq(conferences.id, id));
   revalidateAll();
 }
 
 export async function deleteConference(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const locale = localeFrom(form);
   const id = int(form, "id");
+  if (id) await assertConference(user, id);
   if (id) await db.delete(conferences).where(eq(conferences.id, id));
   revalidateAll();
   redirect(`/${locale}/admin/conferences`);

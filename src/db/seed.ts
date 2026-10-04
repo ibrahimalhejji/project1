@@ -3,10 +3,10 @@
  *   npm run db:seed          -> adds demo data only if there are no conferences yet
  *   npm run db:seed -- --force -> adds the demo data again
  */
-import { count } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { db } from "./index";
 import { ensureDatabase } from "./bootstrap";
-import { abstracts, conferences, registrations, sessionSpeakers, sessions, speakers, sponsors, tracks } from "./schema";
+import { abstracts, conferences, registrations, sessionSpeakers, sessions, speakers, sponsors, tracks, users } from "./schema";
 import { generateCode } from "@/lib/codes";
 
 function iso(date: Date): string {
@@ -28,6 +28,8 @@ async function main() {
     return;
   }
 
+  const [admin] = await db.select({ id: users.id }).from(users).where(eq(users.role, "admin")).limit(1);
+  const ownerId = admin?.id ?? null;
   const today = new Date();
   const start = addDays(today, 45);
   const end = addDays(start, 1);
@@ -35,6 +37,7 @@ async function main() {
   const [annual] = await db
     .insert(conferences)
     .values({
+      ownerId,
       slug: `cmc-hub-annual-${start.getUTCFullYear()}`,
       titleAr: `مؤتمر CMC Hub السنوي ${start.getUTCFullYear()}`,
       titleEn: `CMC Hub Annual Conference ${start.getUTCFullYear()}`,
@@ -280,6 +283,7 @@ async function main() {
   // A past conference, so the archive section has content.
   const pastStart = addDays(today, -300);
   await db.insert(conferences).values({
+    ownerId,
     slug: `cmc-hub-annual-${pastStart.getUTCFullYear()}`,
     titleAr: `مؤتمر CMC Hub السنوي ${pastStart.getUTCFullYear()}`,
     titleEn: `CMC Hub Annual Conference ${pastStart.getUTCFullYear()}`,
@@ -302,6 +306,7 @@ async function main() {
 
   // A draft, so the admin list shows the workflow.
   await db.insert(conferences).values({
+    ownerId,
     slug: "regional-events-forum",
     titleAr: "منتدى الفعاليات الإقليمي",
     titleEn: "Regional Events Forum",

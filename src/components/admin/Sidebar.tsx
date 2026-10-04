@@ -6,13 +6,18 @@ import type { Locale } from "@/i18n/config";
 import type { Dict } from "@/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 
-export function Sidebar({ locale, dict, unread }: { locale: Locale; dict: Dict; unread: number }) {
+export function Sidebar({ locale, dict, unread, role }: { locale: Locale; dict: Dict; unread: number; role: string }) {
   const pathname = usePathname();
   const base = `/${locale}/admin`;
   const items = [
     { href: base, label: dict.admin.dashboard, exact: true },
     { href: `${base}/conferences`, label: dict.admin.conferences },
-    { href: `${base}/messages`, label: dict.admin.messages, badge: unread },
+    ...(role === "admin"
+      ? [
+          { href: `${base}/messages`, label: dict.admin.messages, badge: unread },
+          { href: `${base}/users`, label: dict.admin.users },
+        ]
+      : []),
   ];
   return (
     <aside className="w-full shrink-0 md:w-56">

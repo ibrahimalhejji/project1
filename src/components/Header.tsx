@@ -12,6 +12,7 @@ export function Header({ locale, dict, user }: { locale: Locale; dict: Dict; use
     { href: `/${locale}/conferences`, label: dict.nav.conferences },
     { href: `/${locale}/speakers`, label: dict.nav.speakers },
     { href: `/${locale}/about`, label: dict.nav.about },
+    { href: `/${locale}/support`, label: dict.nav.support },
     { href: `/${locale}/contact`, label: dict.nav.contact },
   ];
   const isAdmin = !!user && ["admin", "organizer"].includes(user.role);
@@ -43,9 +44,14 @@ export function Header({ locale, dict, user }: { locale: Locale; dict: Dict; use
               </form>
             </>
           ) : (
-            <Link href={`/${locale}/login`} className="btn-outline btn-sm">
-              {dict.nav.login}
-            </Link>
+            <>
+              <Link href={`/${locale}/login`} className="btn-outline btn-sm">
+                {dict.nav.login}
+              </Link>
+              <Link href={`/${locale}/signup`} className="btn-accent btn-sm hidden sm:inline-flex">
+                {dict.nav.signup}
+              </Link>
+            </>
           )}
         </div>
       </div>

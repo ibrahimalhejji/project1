@@ -11,7 +11,9 @@ import type { Dict } from "@/i18n/dictionaries";
 import { CONFERENCE_STATUSES } from "@/lib/constants";
 import { initialActionState } from "@/lib/form";
 
-export function ConferenceForm({ locale, dict, conference }: { locale: Locale; dict: Dict; conference?: Conference | null }) {
+type Owner = { id: number; name: string; email: string };
+
+export function ConferenceForm({ locale, dict, conference, owners }: { locale: Locale; dict: Dict; conference?: Conference | null; owners?: Owner[] }) {
   const [state, action] = useActionState(saveConference, initialActionState);
   const f = dict.admin.conferenceFields;
   const c = conference;
@@ -49,6 +51,18 @@ export function ConferenceForm({ locale, dict, conference }: { locale: Locale; d
               ))}
             </select>
           </Field>
+          {owners ? (
+            <Field label={dict.admin.owner} name="ownerId" help={dict.admin.ownerHelp} className="md:col-span-2">
+              <select id="ownerId" name="ownerId" className="input" defaultValue={c?.ownerId ?? ""}>
+                <option value="">{dict.admin.noOwner}</option>
+                {owners.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name} ({o.email})
+                  </option>
+                ))}
+              </select>
+            </Field>
+          ) : null}
         </div>
       </section>
 

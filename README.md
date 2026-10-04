@@ -11,8 +11,9 @@ A modern, bilingual (Arabic RTL / English) rebuild of **cmchub.net** as a confer
 | صفحة المؤتمر: نبذة، البرنامج حسب الأيام والمسارات، المتحدثون، الرعاة | إدارة المؤتمرات (إنشاء / تعديل / نشر / أرشفة / حذف) |
 | التسجيل الإلكتروني مع أنواع تذاكر، تحكم بالسعة ورقم مرجعي | الجلسات والمسارات (متعددة الأيام، قاعات، أنواع، ربط المتحدثين) |
 | تقديم الملخصات البحثية مع موعد نهائي | المتحدثون والرعاة (حسب الفئة) |
-| صفحة المتحدثين، عن المنصة، اتصل بنا | التسجيلات (تغيير الحالة، تصدير CSV) |
-| تبديل اللغة من أي صفحة مع دعم RTL كامل | تحكيم الملخصات (قيد التحكيم / مقبول / مرفوض + ملاحظات) ورسائل التواصل |
+| «أنشئ مؤتمرك»: حساب منظّم بخدمة ذاتية يدير مؤتمراته فقط | التسجيلات (تغيير الحالة، تصدير CSV) |
+| الدعم الفني: أسئلة شائعة + نموذج يصل إلى صندوق المشرف | تحكيم الملخصات (قيد التحكيم / مقبول / مرفوض + ملاحظات) |
+| صفحة المتحدثين، عن المنصة، اتصل بنا، تبديل اللغة مع RTL كامل | المستخدمون والأدوار (مشرف / منظّم) وصندوق الرسائل والدعم |
 
 ## التقنيات / Stack
 
@@ -43,6 +44,7 @@ npm run dev                 # http://localhost:3000  (يحوّل تلقائيا�
 | `npm run db:generate` | توليد migration جديد بعد تعديل `src/db/schema.ts` |
 | `npm run db:studio` | متصفح قاعدة البيانات (Drizzle Studio) |
 | `npm run lint` / `npm run typecheck` | الفحص |
+| `npm run package` | بناء حزمة النشر `dist/cmchub-net-<تاريخ>.tar.gz` الجاهزة للرفع (انظر `deploy/README-DEPLOY.md`) |
 | `npm run restore:wayback` | استعادة الموقع القديم من أرشيف الإنترنت (انظر أدناه) |
 
 ## استعادة الموقع القديم من أرشيف الإنترنت / Restoring the original site from the Wayback Machine
@@ -75,10 +77,20 @@ src/
   lib/                     المصادقة، الجلسات، الأدوات المساعدة
   middleware.ts            توجيه اللغة وحماية لوحة التحكم
 scripts/restore_from_wayback.py   سكربت الاستعادة من الأرشيف
+scripts/analyze_legacy_site.py    تحليل الموقع المستعاد
+scripts/package.sh                بناء حزمة النشر
+deploy/                    Dockerfile، PM2، Nginx، دليل الرفع
+docs/FINAL_CONCEPT.md      التصور النهائي
 drizzle/                   ملفات migration
 ```
 
+## الأدوار والصلاحيات / Roles
+
+- **مشرف (admin)**: كل المؤتمرات + المستخدمون + صندوق الرسائل والدعم. يُنشأ أول مشرف من `.env` عند أول تشغيل.
+- **منظّم (organizer)**: يفتح حسابه من `/signup`، ويرى ويدير مؤتمراته فقط (كل إجراء خادمي يتحقق من الملكية).
+
 ## النشر / Deployment
 
-- أي خادم Node.js 20+: `npm run build && npm start` مع ضبط المتغيرات في `.env` (خاصة `SESSION_SECRET`).
+- `npm run package` ينتج حزمة standalone لا تحتاج `npm install` على الخادم. الدليل الكامل (cPanel Node.js، VPS مع PM2 وNginx، Docker، Vercel/Railway) في `deploy/README-DEPLOY.md`.
 - لقاعدة بيانات مُدارة استخدم Turso: `DATABASE_URL=libsql://...` و `DATABASE_AUTH_TOKEN=...`.
+- التصور النهائي للمنصة وخارطة الطريق في `docs/FINAL_CONCEPT.md`.

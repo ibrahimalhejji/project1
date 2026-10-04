@@ -18,7 +18,9 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dict }) {
             <li><Link href={`/${locale}/conferences`} className="hover:text-brand-700">{dict.nav.conferences}</Link></li>
             <li><Link href={`/${locale}/speakers`} className="hover:text-brand-700">{dict.nav.speakers}</Link></li>
             <li><Link href={`/${locale}/about`} className="hover:text-brand-700">{dict.nav.about}</Link></li>
+            <li><Link href={`/${locale}/support`} className="hover:text-brand-700">{dict.nav.support}</Link></li>
             <li><Link href={`/${locale}/contact`} className="hover:text-brand-700">{dict.nav.contact}</Link></li>
+            <li><Link href={`/${locale}/signup`} className="hover:text-brand-700">{dict.nav.signup}</Link></li>
             <li><Link href={`/${locale}/login`} className="hover:text-brand-700">{dict.nav.login}</Link></li>
           </ul>
         </div>

@@ -4,12 +4,14 @@ import { LogoMark } from "@/components/Logo";
 import { listPublishedConferences, publicStats } from "@/db/queries";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : "ar";
   const dict = getDict(locale);
-  const [conferences, stats] = await Promise.all([listPublishedConferences(), publicStats()]);
+  const [conferences, stats, user] = await Promise.all([listPublishedConferences(), publicStats(), getCurrentUser()]);
+  const isManager = !!user && ["admin", "organizer"].includes(user.role);
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = conferences.filter((c) => c.endDate >= today).slice(0, 3);
   const featured = upcoming.length ? upcoming : conferences.slice(-3).reverse();
@@ -89,9 +91,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className="rounded-3xl bg-brand-800 px-6 py-12 text-center text-white md:px-12">
           <h2 className="text-2xl font-bold">{dict.home.ctaTitle}</h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/80">{dict.home.ctaBody}</p>
-          <Link href={`/${locale}/admin`} className="btn-accent mt-6">
-            {dict.home.ctaButton}
-          </Link>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link href={isManager ? `/${locale}/admin/conferences/new` : `/${locale}/signup`} className="btn-accent">
+              {dict.home.ctaButton}
+            </Link>
+            <Link href={isManager ? `/${locale}/admin` : `/${locale}/login`} className="btn border border-white/40 text-white hover:bg-white/10">
+              {dict.home.ctaDashboard}
+            </Link>
+          </div>
         </div>
       </section>
     </>

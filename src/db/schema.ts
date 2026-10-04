@@ -13,6 +13,7 @@ const timestamps = {
 import {
   ABSTRACT_STATUSES,
   CONFERENCE_STATUSES,
+  MESSAGE_CATEGORIES,
   REGISTRATION_STATUSES,
   SESSION_TYPES,
   SPONSOR_TIERS,
@@ -20,7 +21,7 @@ import {
   USER_ROLES,
 } from "@/lib/constants";
 
-export { ABSTRACT_STATUSES, CONFERENCE_STATUSES, REGISTRATION_STATUSES, SESSION_TYPES, SPONSOR_TIERS, TICKET_TYPES, USER_ROLES };
+export { ABSTRACT_STATUSES, CONFERENCE_STATUSES, MESSAGE_CATEGORIES, REGISTRATION_STATUSES, SESSION_TYPES, SPONSOR_TIERS, TICKET_TYPES, USER_ROLES };
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -28,12 +29,14 @@ export const users = sqliteTable("users", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   role: text("role", { enum: USER_ROLES }).notNull().default("attendee"),
+  organization: text("organization").notNull().default(""),
   ...timestamps,
 });
 
 export const conferences = sqliteTable("conferences", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   slug: text("slug").notNull().unique(),
+  ownerId: integer("owner_id").references(() => users.id, { onDelete: "set null" }),
   titleAr: text("title_ar").notNull(),
   titleEn: text("title_en").notNull(),
   taglineAr: text("tagline_ar").notNull().default(""),
@@ -177,6 +180,7 @@ export const messages = sqliteTable("messages", {
   email: text("email").notNull(),
   subject: text("subject").notNull().default(""),
   body: text("body").notNull(),
+  category: text("category", { enum: MESSAGE_CATEGORIES }).notNull().default("contact"),
   isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
   ...timestamps,
 });

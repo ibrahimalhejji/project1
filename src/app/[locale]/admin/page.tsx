@@ -4,26 +4,27 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { dashboardStats } from "@/db/queries";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
-import { getCurrentUser } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { formatDateTime, localized } from "@/lib/utils";
 
 export default async function AdminDashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : "ar";
   const dict = getDict(locale);
-  const [stats, user] = await Promise.all([dashboardStats(), getCurrentUser()]);
+  const user = await requireAdmin(locale);
+  const stats = await dashboardStats(user);
   const cards = [
     { label: dict.admin.totalConferences, value: stats.totalConferences, href: `/${locale}/admin/conferences` },
     { label: dict.admin.publishedConferences, value: stats.publishedConferences, href: `/${locale}/admin/conferences` },
     { label: dict.admin.totalRegistrations, value: stats.totalRegistrations, href: `/${locale}/admin/conferences` },
     { label: dict.admin.pendingAbstracts, value: stats.pendingAbstracts, href: `/${locale}/admin/conferences` },
-    { label: dict.admin.unreadMessages, value: stats.unreadMessages, href: `/${locale}/admin/messages` },
+    ...(user.role === "admin" ? [{ label: dict.admin.unreadMessages, value: stats.unreadMessages, href: `/${locale}/admin/messages` }] : []),
   ];
   return (
     <>
       <PageHeader
         title={dict.admin.title}
-        subtitle={`${dict.admin.welcome}${user ? `، ${user.name}` : ""}`}
+        subtitle={`${dict.admin.welcome}، ${user.name}`}
         actions={
           <Link href={`/${locale}/admin/conferences/new`} className="btn-primary">
             + {dict.admin.newConference}

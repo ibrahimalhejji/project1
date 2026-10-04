@@ -6,10 +6,10 @@ import { db } from "@/db";
 import { sessionSpeakers, sessions, SESSION_TYPES, tracks } from "@/db/schema";
 import { int, list, oneOf, str, type ActionState } from "@/lib/form";
 import { getDict } from "@/i18n/dictionaries";
-import { localeFrom, requireAdminAction, revalidateAll } from "./_guard";
+import { assertConference, assertOwned, localeFrom, requireManager, revalidateAll } from "./_guard";
 
 export async function saveSession(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdminAction();
+  const user = await requireManager();
   const locale = localeFrom(form);
   const dict = getDict(locale);
   const id = int(form, "id");
@@ -21,6 +21,8 @@ export async function saveSession(_prev: ActionState, form: FormData): Promise<A
   const endTime = str(form, "endTime", 5);
   const errors: Record<string, string> = {};
   if (!conferenceId) return { ok: false, message: dict.common.error };
+  await assertConference(user, conferenceId);
+  if (id && (await assertOwned(user, "sessions", id)) !== conferenceId) return { ok: false, message: dict.common.error };
   if (!titleEn) errors.titleEn = dict.common.required;
   if (!titleAr) errors.titleAr = dict.common.required;
   if (!day) errors.day = dict.common.required;
@@ -61,25 +63,32 @@ export async function saveSession(_prev: ActionState, form: FormData): Promise<A
 }
 
 export async function deleteSession(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
-  if (id) await db.delete(sessions).where(eq(sessions.id, id));
+  if (id) {
+    await assertOwned(user, "sessions", id);
+    await db.delete(sessions).where(eq(sessions.id, id));
+  }
   revalidateAll();
 }
 
 export async function saveTrack(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const conferenceId = int(form, "conferenceId");
   const nameEn = str(form, "nameEn", 100);
   const nameAr = str(form, "nameAr", 100);
   if (!conferenceId || (!nameEn && !nameAr)) return;
+  await assertConference(user, conferenceId);
   await db.insert(tracks).values({ conferenceId, nameEn: nameEn || nameAr, nameAr: nameAr || nameEn, color: str(form, "color", 7) || "#2a807a" });
   revalidateAll();
 }
 
 export async function deleteTrack(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
-  if (id) await db.delete(tracks).where(eq(tracks.id, id));
+  if (id) {
+    await assertOwned(user, "tracks", id);
+    await db.delete(tracks).where(eq(tracks.id, id));
+  }
   revalidateAll();
 }

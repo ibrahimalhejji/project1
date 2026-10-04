@@ -8,7 +8,7 @@ import { int, oneOf, str, type ActionState } from "@/lib/form";
 import { generateCode } from "@/lib/codes";
 import { isValidEmail } from "@/lib/utils";
 import { getDict } from "@/i18n/dictionaries";
-import { localeFrom, requireAdminAction, revalidateAll } from "./_guard";
+import { assertOwned, localeFrom, requireManager, revalidateAll } from "./_guard";
 
 export async function submitAbstract(_prev: ActionState, form: FormData): Promise<ActionState> {
   const locale = localeFrom(form);
@@ -48,17 +48,23 @@ export async function submitAbstract(_prev: ActionState, form: FormData): Promis
 }
 
 export async function reviewAbstract(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
   const status = oneOf(form, "status", ABSTRACT_STATUSES, "submitted");
   const reviewerNotes = str(form, "reviewerNotes", 5000);
-  if (id) await db.update(abstracts).set({ status, reviewerNotes }).where(eq(abstracts.id, id));
+  if (id) {
+    await assertOwned(user, "abstracts", id);
+    await db.update(abstracts).set({ status, reviewerNotes }).where(eq(abstracts.id, id));
+  }
   revalidateAll();
 }
 
 export async function deleteAbstract(form: FormData) {
-  await requireAdminAction();
+  const user = await requireManager();
   const id = int(form, "id");
-  if (id) await db.delete(abstracts).where(eq(abstracts.id, id));
+  if (id) {
+    await assertOwned(user, "abstracts", id);
+    await db.delete(abstracts).where(eq(abstracts.id, id));
+  }
   revalidateAll();
 }
