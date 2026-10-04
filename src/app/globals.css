@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #eef7f6;
+  --color-brand-100: #d4ebe8;
+  --color-brand-200: #a9d7d1;
+  --color-brand-300: #74bdb5;
+  --color-brand-400: #459e97;
+  --color-brand-500: #2a807a;
+  --color-brand-600: #1f6661;
+  --color-brand-700: #1b524f;
+  --color-brand-800: #184240;
+  --color-brand-900: #163736;
+  --color-accent-400: #f2b33d;
+  --color-accent-500: #e59e1b;
+  --color-accent-600: #c47f0f;
+  --font-sans: "Segoe UI", Tahoma, "Noto Sans Arabic", "Noto Naskh Arabic", system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --background: #f8fafb;
+  --foreground: #10232b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.hero-gradient {
+  background:
+    radial-gradient(1200px 500px at 80% -10%, rgba(242, 179, 61, 0.25), transparent 60%),
+    radial-gradient(900px 400px at 10% 110%, rgba(69, 158, 151, 0.35), transparent 60%),
+    linear-gradient(135deg, #163736 0%, #1f6661 55%, #2a807a 100%);
+}
+
+.card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:cursor-not-allowed disabled:opacity-60;
+}
+.btn-primary {
+  @apply btn bg-brand-600 text-white hover:bg-brand-700;
+}
+.btn-accent {
+  @apply btn bg-accent-500 text-brand-900 hover:bg-accent-600;
+}
+.btn-outline {
+  @apply btn border border-slate-300 bg-white text-slate-800 hover:bg-slate-50;
+}
+.btn-ghost {
+  @apply btn text-slate-700 hover:bg-slate-100;
+}
+.btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700;
+}
+.btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+.input {
+  @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200;
+}
+.label {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+.help {
+  @apply mt-1 text-xs text-slate-500;
+}
+
+.table {
+  @apply w-full border-collapse text-sm;
+}
+.table th {
+  @apply border-b border-slate-200 bg-slate-50 px-3 py-2.5 text-start text-xs font-semibold uppercase tracking-wide text-slate-600;
+}
+.table td {
+  @apply border-b border-slate-100 px-3 py-2.5 align-top text-slate-800;
+}
+.table tr:last-child td {
+  @apply border-b-0;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.prose-basic p {
+  @apply mb-3 leading-7 text-slate-700;
+}
