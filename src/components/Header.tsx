@@ -18,12 +18,8 @@ export function Header({ locale, dict, user }: { locale: Locale; dict: Dict; use
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5">
-          <Logo />
-          <span className="leading-tight">
-            <span className="block text-base font-bold text-brand-800">{dict.site.name}</span>
-            <span className="block text-[11px] text-slate-500">{dict.site.tagline}</span>
-          </span>
+        <Link href={`/${locale}`} className="flex items-center" aria-label={dict.site.name}>
+          <Logo tagline={dict.site.tagline} />
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {links.map((link) => (

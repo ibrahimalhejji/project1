@@ -9,10 +9,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dict }) {
     <footer className="mt-16 border-t border-slate-200 bg-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
         <div>
-          <div className="flex items-center gap-2.5">
-            <Logo className="h-8 w-8" />
-            <span className="text-lg font-bold text-brand-800">{dict.site.name}</span>
-          </div>
+          <Logo tagline={dict.site.tagline} markClass="h-9 w-9" />
           <p className="mt-3 max-w-sm text-sm leading-6 text-slate-600">{dict.site.description}</p>
         </div>
         <div>

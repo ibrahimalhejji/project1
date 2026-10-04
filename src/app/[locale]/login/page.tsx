@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/forms/LoginForm";
-import { Logo } from "@/components/Logo";
+import { LogoMark } from "@/components/Logo";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
 import { getCurrentUser } from "@/lib/auth";
@@ -24,7 +24,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
     <div className="mx-auto max-w-md px-4 py-16">
       <div className="card p-8">
         <div className="flex items-center gap-3">
-          <Logo />
+          <LogoMark className="h-12 w-12" />
           <div>
             <h1 className="text-xl font-bold text-slate-900">{dict.login.title}</h1>
             <p className="text-sm text-slate-500">{dict.login.intro}</p>

@@ -1,25 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #eef7f6;
-  --color-brand-100: #d4ebe8;
-  --color-brand-200: #a9d7d1;
-  --color-brand-300: #74bdb5;
-  --color-brand-400: #459e97;
-  --color-brand-500: #2a807a;
-  --color-brand-600: #1f6661;
-  --color-brand-700: #1b524f;
-  --color-brand-800: #184240;
-  --color-brand-900: #163736;
-  --color-accent-400: #f2b33d;
-  --color-accent-500: #e59e1b;
-  --color-accent-600: #c47f0f;
+  --color-brand-50: #eef6fa;
+  --color-brand-100: #d7eaf3;
+  --color-brand-200: #a9d6e3;
+  --color-brand-300: #7dbfd3;
+  --color-brand-400: #549fbf;
+  --color-brand-500: #3b7fa6;
+  --color-brand-600: #2f6a8d;
+  --color-brand-700: #275672;
+  --color-brand-800: #1f3b5c;
+  --color-brand-900: #172c45;
+  --color-accent-400: #d8b25c;
+  --color-accent-500: #c9a24a;
+  --color-accent-600: #a8842f;
+  --color-teal-brand: #2f6f7e;
+  --color-purple-brand: #4b3f8f;
   --font-sans: "Segoe UI", Tahoma, "Noto Sans Arabic", "Noto Naskh Arabic", system-ui, -apple-system, sans-serif;
 }
 
 :root {
-  --background: #f8fafb;
-  --foreground: #10232b;
+  --background: #f7fafc;
+  --foreground: #0f1f33;
 }
 
 html {
@@ -35,9 +37,9 @@ body {
 
 .hero-gradient {
   background:
-    radial-gradient(1200px 500px at 80% -10%, rgba(242, 179, 61, 0.25), transparent 60%),
-    radial-gradient(900px 400px at 10% 110%, rgba(69, 158, 151, 0.35), transparent 60%),
-    linear-gradient(135deg, #163736 0%, #1f6661 55%, #2a807a 100%);
+    radial-gradient(1200px 500px at 85% -10%, rgba(201, 162, 74, 0.28), transparent 60%),
+    radial-gradient(900px 420px at 5% 110%, rgba(169, 214, 227, 0.35), transparent 60%),
+    linear-gradient(135deg, #0b1626 0%, #1f3b5c 50%, #3b7fa6 100%);
 }
 
 .card {

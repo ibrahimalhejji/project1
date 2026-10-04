@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ConferenceCard } from "@/components/ConferenceCard";
+import { LogoMark } from "@/components/Logo";
 import { listPublishedConferences, publicStats } from "@/db/queries";
 import { isLocale } from "@/i18n/config";
 import { getDict } from "@/i18n/dictionaries";
@@ -18,7 +19,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section className="hero-gradient text-white">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 md:grid-cols-5 md:py-28">
           <div className="md:col-span-3">
-            <p className="text-sm font-semibold uppercase tracking-widest text-accent-400">{dict.site.tagline}</p>
+            <p className="flex items-center gap-3 text-sm font-semibold uppercase tracking-widest text-accent-400">
+              <LogoMark className="h-12 w-12 drop-shadow" />
+              <span>{dict.site.tagline}</span>
+            </p>
             <h1 className="mt-3 text-4xl font-black leading-tight md:text-5xl">{dict.home.heroTitle}</h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-white/85">{dict.home.heroSubtitle}</p>
             <div className="mt-8 flex flex-wrap gap-3">

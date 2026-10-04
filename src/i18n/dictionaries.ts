@@ -2,8 +2,8 @@ import type { Locale } from "./config";
 
 const en = {
   site: {
-    name: "CMC Hub",
-    tagline: "Conference Management Platform",
+    name: "CMChub.net",
+    tagline: "Smart Conference Management",
     description: "Plan, publish and run scientific and professional conferences: agenda, speakers, registration, abstracts and sponsors in one place.",
   },
   nav: {
@@ -74,7 +74,7 @@ const en = {
   },
   home: {
     heroTitle: "Run world-class conferences with confidence",
-    heroSubtitle: "CMC Hub brings your programme, speakers, registrations, abstracts and sponsors together on one bilingual platform.",
+    heroSubtitle: "CMChub.net brings your programme, speakers, registrations, abstracts and sponsors together on one bilingual platform.",
     browse: "Browse conferences",
     upcoming: "Upcoming conferences",
     upcomingSub: "Published events open for registration.",
@@ -156,8 +156,8 @@ const en = {
     intro: "Experts and keynote speakers from our published conferences.",
   },
   about: {
-    title: "About CMC Hub",
-    lead: "CMC Hub is a conference management platform built to help organisers plan, publish and run scientific and professional events.",
+    title: "About CMChub.net",
+    lead: "CMChub.net is a smart conference management platform built to help organisers plan, publish and run scientific and professional events.",
     body: [
       "The platform started more than a decade ago as cmchub.net and has been rebuilt from the ground up with a modern, bilingual, mobile-friendly stack.",
       "Organisers manage every part of an event from one dashboard: the programme, speakers, sponsors, attendee registration and the call for abstracts.",
@@ -293,9 +293,9 @@ const en = {
   },
   footer: {
     rights: "All rights reserved.",
-    platform: "Conference management platform",
+    platform: "Smart Conference Management",
     links: "Links",
-    builtOn: "Rebuilt from the original cmchub.net",
+    builtOn: "Rebuilt on the original CMChub.net brand (since 2015)",
   },
 };
 
@@ -303,8 +303,8 @@ export type Dict = typeof en;
 
 const ar: Dict = {
   site: {
-    name: "CMC Hub",
-    tagline: "منصة إدارة المؤتمرات",
+    name: "CMChub.net",
+    tagline: "الإدارة الذكية للمؤتمرات",
     description: "خطّط وانشر وأدِر المؤتمرات العلمية والمهنية: البرنامج، المتحدثون، التسجيل، الملخصات البحثية والرعاة في مكان واحد.",
   },
   nav: {
@@ -375,7 +375,7 @@ const ar: Dict = {
   },
   home: {
     heroTitle: "نظّم مؤتمرات بمستوى عالمي بكل ثقة",
-    heroSubtitle: "تجمع منصة CMC Hub البرنامج العلمي والمتحدثين والتسجيل والملخصات البحثية والرعاة في منصة واحدة ثنائية اللغة.",
+    heroSubtitle: "تجمع منصة CMChub.net البرنامج العلمي والمتحدثين والتسجيل والملخصات البحثية والرعاة في منصة واحدة ثنائية اللغة.",
     browse: "تصفح المؤتمرات",
     upcoming: "المؤتمرات القادمة",
     upcomingSub: "الفعاليات المنشورة والمتاح التسجيل فيها.",
@@ -457,8 +457,8 @@ const ar: Dict = {
     intro: "خبراء ومتحدثون رئيسيون من مؤتمراتنا المنشورة.",
   },
   about: {
-    title: "عن منصة CMC Hub",
-    lead: "CMC Hub منصة لإدارة المؤتمرات صُممت لمساعدة المنظمين على تخطيط ونشر وإدارة الفعاليات العلمية والمهنية.",
+    title: "عن منصة CMChub.net",
+    lead: "CMChub.net منصة ذكية لإدارة المؤتمرات صُممت لمساعدة المنظمين على تخطيط ونشر وإدارة الفعاليات العلمية والمهنية.",
     body: [
       "انطلقت المنصة قبل أكثر من عقد باسم cmchub.net، وأُعيد بناؤها من الصفر بتقنيات حديثة ثنائية اللغة ومتوافقة مع الجوال.",
       "يدير المنظمون كل تفاصيل الفعالية من لوحة تحكم واحدة: البرنامج، المتحدثون، الرعاة، تسجيل المشاركين، واستقبال الملخصات البحثية.",
@@ -594,9 +594,9 @@ const ar: Dict = {
   },
   footer: {
     rights: "جميع الحقوق محفوظة.",
-    platform: "منصة إدارة المؤتمرات",
+    platform: "الإدارة الذكية للمؤتمرات",
     links: "روابط",
-    builtOn: "أُعيد بناؤها من موقع cmchub.net الأصلي",
+    builtOn: "أُعيد بناؤها على هوية CMChub.net الأصلية (منذ 2015)",
   },
 };
 
